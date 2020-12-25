@@ -24,3 +24,6 @@
 **Technical architecture:**
 
 ![Smart Supervisor](https://user-images.githubusercontent.com/29690304/103139954-068ac400-4708-11eb-92ea-f76c3600514b.png)
+
+# Node-RED Dashboard URL:
+- https://node-red-eznsd-2020-12-23.mybluemix.net/ui/
