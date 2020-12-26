@@ -27,3 +27,6 @@
 
 # Node-RED Dashboard URL:
 - https://node-red-eznsd-2020-12-23.mybluemix.net/ui/
+
+# Video Demonstration URL:
+- https://youtu.be/pnvcBqppaQk
