@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+if [ "$1" == "--help" ]; then
+  echo "Usage: `basename $0` [Enter you target domain name : example.com]"
+  echo " ex :- ./`basename $0` example.com"
+  exit 0
+fi
+if [ "$1" == "-h" ]; then
+  echo "Usage: `basename $0` [Enter you target domain name : example.com]"
+  echo " ex :- ./`basename $0` example.com"
+  exit 0
+fi
+clear
+echo "   Hello : "
+figlet -f banner ${USER} | lolcat
+echo -e "\e[97m [ ENTER YOU TARGET NAME AND WAIT FOR SOME TIME : WEBCIPHER101 ]\e[00m"
+
+read -p "  Enter you domain name : " target
+echo -e "\e[93m          *** subdomain enum is started        ***       "
+mkdir $target
+subfinder -silent -d $target -o subfinder.txt
+sleep 2
+assetfinder -subs-only $target | tee assetfinder.txt
+sleep 2
+findomain -t $target -u findomain.txt
+sleep 2
+sort subfinder.txt findomain.txt assetfinder.txt | uniq >> subdomains.txt
+cat subdomains.txt | httpx | tee domains.txt
+sleep 2
+mv domains.txt $PWD/$target
+sleep 2
+rm -rf subfinder.txt findomain.txt subdomains.txt assetfinder.txt
+sleep 2
+echo -e "\e[37m          *** subdomain enum is completed       ***       "
+
+echo ">> 📁 Subdomains for $target were saved in: $target folder 😀
+
+Good luck ${USER} 💀!"
