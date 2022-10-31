@@ -1,0 +1,71 @@
+private void timer1_Tick(object sender, EventArgs e)
+{
+    using (Image<Bgr, byte> nextFrame = cap.QueryFrame())
+    {
+        if (nextFrame != null)
+        {
+            // there's only one channel (greyscale), hence the zero index
+            //var faces = nextFrame.DetectHaarCascade(haar)[0];
+            Image<Gray, byte> grayframe = nextFrame.Convert<Gray, byte>();
+            Image<Gray, Byte> gray = nextFrame.Convert<Gray, Byte>();
+            Image<Gray, Byte> gray1 = nextFrame.Convert<Gray, Byte>();
+
+            var faces = grayframe.DetectHaarCascade(
+                            haar, 1.4, 4,
+                            HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
+                            new Size(nextFrame.Width / 8, nextFrame.Height / 8)
+                            )[0];
+
+            MCvAvgComp[][] eyes = gray.DetectHaarCascade(eye, 1.1, 1, Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING, new Size(20, 20));
+            gray.ROI = Rectangle.Empty;
+
+            MCvAvgComp[][] mouthsDetected = gray.DetectHaarCascade(mouth, 1.1, 10, Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING, new Size(20, 20));
+            gray1.ROI = Rectangle.Empty;
+
+            foreach (MCvAvgComp mouthsnap in mouthsDetected[0])
+            {
+            Rectangle eyeRect = eyesnap.rect;
+                // mouthRect.Offset(f.rect.X, f.rect.Y);
+                nextFrame.Draw(eyeRect, new Bgr(Color.Green), 2);
+            }
+            foreach (var face in faces)
+            {
+                nextFrame.Draw(face.rect, new Bgr(Color.LightGreen), 3);
+                facesnap = face.rect;
+            }
+
+            pictureBox1.Image = nextFrame.ToBitmap();
+        }
+    }
+
+}
+
+private void Form1_Load(object sender, EventArgs e)
+{
+    cap = new Capture(0);
+    // adjust path to find your xml
+    //haar = new HaarCascade("haarcascade_frontalface_alt2.xml");
+    haar = new HaarCascade("haarcascade_frontalface_alt_tree.xml");
+    mouth = new HaarCascade("Mouth.xml");
+
+    eye = new HaarCascade("haarcascade_eye_tree_eyeglasses.xml");
+}
+
+private void button1_Click(object sender, EventArgs e)
+{
+    Image snap = pictureBox1.Image;
+
+    snap.Save("c:\\snapshot.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+
+    pictureBox2.Image = snap;
+    pictureBox3.Image = cropImage(snap,facesnap);
+    pictureBox4.Image = cropImage(snap, detectedmouth);
+
+}
+
+private static Image cropImage(Image img, Rectangle croparea)
+{
+    Bitmap bmpImage = new Bitmap(img);
+    Bitmap bmpCrop = bmpImage.Clone(croparea, bmpImage.PixelFormat);
+    return (Image)(bmpCrop);
+}
